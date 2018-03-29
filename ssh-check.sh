@@ -9,17 +9,26 @@ for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 	inst_list=$(aws ec2 describe-instances --region=eu-west-1 \
 		| jq '.Reservations[].Instances[]')
 
-	for ip in $(echo ${inst_list} | jq '.PublicIpAddress') ; do
-		ssh ${user}@${ip} exit
+	for ip_quoted in $(echo ${inst_list} | jq '.PublicIpAddress') ; do
+		ip=$(echo ${ip_quoted} | tr -d '"')
+
+		if [ ${ip} = 'null' ] ; then
+			continue
+		fi
+
+		ssh -o 'ConnectTimeout 10' -o 'KbdInteractiveAuthentication no' \
+			-o 'BatchMode yes' ${user}@${ip} exit
 
 		last=$?
 
 		if [ ${last} -eq 0 ] ; then
-			
+			echo ${user}'@'${ip}': success'
+			continue
 		fi
 
-	done
+		echo ${user}'@'${ip}': failure'
 
+	done
 
 done
 
