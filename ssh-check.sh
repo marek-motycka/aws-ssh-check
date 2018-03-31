@@ -3,6 +3,10 @@
 #try ssh as motycka to all instances
 
 user="mmotycka"
+ssh_timeout="10"
+
+echo "[[[$date]]]"
+echo "[[[$date]]]" >&2
 
 for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 
@@ -16,7 +20,7 @@ for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 			continue
 		fi
 
-		ssh -o 'ConnectTimeout 10' -o 'KbdInteractiveAuthentication no' \
+		ssh -o 'ConnectTimeout '${ssh_timeout} -o 'KbdInteractiveAuthentication no' \
 			-o 'BatchMode yes' ${user}@${ip} exit
 
 		last=$?
@@ -26,7 +30,7 @@ for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 			continue
 		fi
 
-		echo ${user}'@'${ip}': failure'
+		echo ${user}'@'${ip}': failure' >&2
 
 	done
 
