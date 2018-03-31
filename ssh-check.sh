@@ -5,8 +5,8 @@
 user="mmotycka"
 ssh_timeout="10"
 
-echo "[[[$date]]]"
-echo "[[[$date]]]" >&2
+echo "[[[$(date)]]]"
+echo "[[[$(date)]]]" >&2
 
 for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 
