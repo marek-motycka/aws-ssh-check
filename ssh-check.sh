@@ -10,7 +10,7 @@ echo "[[[$(date)]]]" >&2
 
 for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 
-	inst_list=$(aws ec2 describe-instances --region=eu-west-1 \
+	inst_list=$(aws ec2 describe-instances --region=${reg} \
 		| jq '.Reservations[].Instances[]')
 
 	for ip_quoted in $(echo ${inst_list} | jq '.PublicIpAddress') ; do
