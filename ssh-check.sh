@@ -8,7 +8,7 @@ ssh_timeout="10"
 echo "[[[$(date)]]]"
 echo "[[[$(date)]]]" >&2
 
-for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
+for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName' | tr -d '"') ; do
 
 	inst_list=$(aws ec2 describe-instances --region=${reg} \
 		| jq '.Reservations[].Instances[]')
@@ -21,7 +21,7 @@ for reg in $(aws ec2 describe-regions | jq '.Regions[].RegionName') ; do
 		fi
 
 		ssh -o 'ConnectTimeout '${ssh_timeout} -o 'KbdInteractiveAuthentication no' \
-			-o 'BatchMode yes' ${user}@${ip} exit
+			-o 'BatchMode yes' -o 'StrictHostKeyChecking no' ${user}@${ip} exit
 
 		last=$?
 
